@@ -16,6 +16,10 @@ namespace :docker do
 
   task :create_container do
     on roles(:all) do
+      invoke "docker:prepare_server"
+      within release_path do
+        execute "cd #{release_path} && docker build -t #{fetch(:application)} ."
+      end
     end
   end
 end

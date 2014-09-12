@@ -1,7 +1,7 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-set :application, 'my_app_name'
+set :application, 'inercity_docker'
 set :repo_url, 'git@github.com:jvanbaarsen/docker-capistrano-test.git'
 set :ssh_options, {
   forward_agent: true,
