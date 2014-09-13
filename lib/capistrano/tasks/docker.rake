@@ -19,6 +19,7 @@ namespace :docker do
       invoke "docker:prepare_server"
       within release_path do
         execute "cd #{release_path} && docker build -t #{fetch(:application)} ."
+        execute "cd #{release_path} && docker run -d #{fetch(:application)}"
       end
     end
   end
