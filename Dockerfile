@@ -17,28 +17,27 @@ RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 
+# Start Nginx / Passenger
+RUN rm -f /etc/service/nginx/down
 # Add the nginx info
 ADD webapp.conf /etc/nginx/sites-enabled/webapp.conf
+RUN rm /etc/nginx/sites-enabled/default
 
 # Enable insecure ssh connection TODO: Remove in production
 RUN /usr/sbin/enable_insecure_key
 
 # Prepare folders
-RUN mkdir /home/app/www
-RUN mkdir /home/app/bundle
-RUN chown -R app:app /home/app/www
-RUN chown -R app:app /home/app/bundle
+RUN su app -c 'mkdir /home/app/webapp'
+RUN su app -c 'mkdir /home/app/bundle'
 
 # Run Bundle in a cache efficient way
-ADD Gemfile      /home/app/www/
-ADD Gemfile.lock /home/app/www/
-RUN cd /home/app/www && sudo -u app -H bundle install --deployment --path /home/app/bundle
+ADD Gemfile      /home/app/webapp/
+ADD Gemfile.lock /home/app/webapp/
+RUN su app -c 'cd /home/app/webapp && bundle install --deployment --path /home/app/bundle'
 
 # Add the rails app
-ADD . /home/app/www
+ADD . /home/app/webapp
 
-# Start Nginx / Passenger
-RUN rm -f /etc/service/nginx/down
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
