@@ -27,17 +27,17 @@ RUN rm /etc/nginx/sites-enabled/default
 RUN /usr/sbin/enable_insecure_key
 
 # Prepare folders
-RUN su app -c 'mkdir /home/app/webapp'
-RUN su app -c 'mkdir /home/app/bundle'
+RUN mkdir /home/app/webapp
+RUN mkdir /home/app/bundle
 
 # Run Bundle in a cache efficient way
-ADD Gemfile      /home/app/webapp/
-ADD Gemfile.lock /home/app/webapp/
-RUN su app -c 'cd /home/app/webapp && bundle install --deployment --path /home/app/bundle'
+WORKDIR /tmp
+ADD Gemfile      /tmp/
+ADD Gemfile.lock /tmp/
+RUN bundle install
 
 # Add the rails app
 ADD . /home/app/webapp
-
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
